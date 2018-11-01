@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.Scanner;
 
 public class ShoppingList {
@@ -8,7 +7,8 @@ public class ShoppingList {
 	public static void main(String[] args) {
 
 		Scanner scan = new Scanner(System.in);
-		boolean stop = false;
+		boolean cont = false;
+		double avg = 0;
 
 		ArrayList<String> gItems = new ArrayList<String>(
 				Arrays.asList("Bannana", "Apple", "Taco", "Rice", "Ginger",
@@ -16,43 +16,94 @@ public class ShoppingList {
 		ArrayList<Double> prices = new ArrayList<Double>(
 				Arrays.asList(4.44, 3.33, 2.0, 6.66, 69.69, 88.88, 9.99, 1.11));
 
-		LinkedList<String> shopList = new LinkedList<>();
-		LinkedList<Double> costList = new LinkedList<>();
+		ArrayList<String> shopList = new ArrayList<>();
+		ArrayList<Double> pricesList = new ArrayList<>();
 
 		/// scanner input example
+		System.out.println(getName(scan));
 
-		for (int i = 0; i < gItems.size(); i++) {
-			System.out.printf("%-10.10s  %-10.10s%n", gItems.get(i), prices.get(i));
-		}
 
-		while (stop == false) {
+		do {
+			System.out.println("\nCurrent Stock");
+			System.out.printf("%1$-15s %2$-8s\n", "Item", "Price");
+			System.out.printf("=======================\n");
+			for (int i = 0; i < gItems.size(); ++i) {
+				System.out.printf("%1$-15s %2$-8s\n", gItems.get(i), prices.get(i));
+			}
 
-			String inBag = Validator.getString(scan, "Enter item name to add to list: \n");
+			String inBag = Validator.getString(scan, "\nEnter item name to add to list: \n");
 
 			boolean checkItems = gItems.contains(inBag);
-
-			System.out.println("Bag: " + gItems.indexOf(inBag));
-
-
-			System.out.println("Number?  " + gItems.indexOf(inBag));
 			int listI = gItems.indexOf(inBag);
-			System.out.println("MagicNumber: " + listI);
+
+			if (checkItems == true) {
+				System.out.println("Added " + gItems.get(listI) + " to bag for " + "$" + prices.get(listI) + ".");
+				// add items and prices via indices
+				// try to make it so you can add multiple of item
+				shopList.add(gItems.get(listI));
+				pricesList.add(prices.get(listI));
+			} else {
+				System.out.println("Sorry, we do not stock that item. Please try again.");
+				continue;
+			}
 
 
-			// add items and prices via indices
-			// shopList.add(inBag);
-			// shopList.add(gItems.get(index-1));
+			System.out.println("Would you like to add another item? y/n");
+			String choice = scan.nextLine();
 
-			System.out.println("Shopping List: " + shopList);
+			// use validator here?
+			if (choice.equalsIgnoreCase("y")) {
+				cont = true;
+			} else if (choice.equalsIgnoreCase("n")) {
 
-		}
+				System.out.println("Thanks for your order! Here's what you got:");
+
+				for (int i = 0; i < shopList.size(); ++i) {
+					System.out.printf("\n%1$-15s %2$-8s", shopList.get(i), pricesList.get(i));
+				}
+
+				getAverage(prices, avg);
+
+				cont = false;
+			}
+		} while (cont == true);
+
+
 
 	}
 
 	// your method should here
-	public static ArrayList<String> getName(ArrayList<String> gItems) {
-
-		return gItems;
+	public static String getName(Scanner scan) {
+		System.out.println("Please enter your name:");
+		String userName = scan.nextLine();
+		return "Welcome " + userName + " to the Super Super Market!";
 	}
 
+	public static void getAverage(ArrayList<Double> prices, double avg) {
+		avg = 0;
+		for (int i = 0; i < prices.size(); ++i) {
+			avg += prices.get(i) / prices.size();
+		}
+		System.out.printf("\nAverage price per item in order was %.2f", avg);
+	}
+
+	public static double getHigh(ArrayList<Double> prices) {
+		double highPrice = 0;
+		for (double price : prices) {
+			if (price > highPrice) {
+				highPrice = price;
+			}
+		}
+		return highPrice;
+	}
+
+	public static double getLow(ArrayList<Double> prices) {
+		double lowPrice = Double.MAX_VALUE;
+		for (double price : prices) {
+			if (price < lowPrice) {
+				lowPrice = price;
+			}
+		}
+		return lowPrice;
+	}
 }
